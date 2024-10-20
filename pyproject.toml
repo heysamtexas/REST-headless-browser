@@ -1,0 +1,64 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "REST-headless-browser"
+authors = [{name = "Sam Texas", email = "github+rest_headless_browser@simplecto.com"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+dscription = ""
+versions = "0.1.0"
+
+[project.urls]
+Home = "https://github.com/heysamtexas/REST-headless-browser"
+
+[tool.ruff]
+fix = true
+line-length = 120
+target-version = "py312"
+exclude = [
+    "pyproject.toml",
+    "src/**/tests/*",
+    "src/**/migrations/*",
+    ".idea/**",
+    "src/manage.py",
+]
+
+[tool.ruff.lint]
+
+ignore = [
+    "ANN101",
+    "E501",
+    "D203",
+    "D213",
+    "D100",
+    "COM812",
+    "RUF012",
+]
+select = ["ALL", "W2", "I"]
+exclude = [
+    "pyproject.toml",
+    "src/**/tests/**",
+    "src/**/migrations/**",
+    ".idea/**",
+    "src/manage.py",
+]
+
+[tool.bandit]
+exclude = ["src/**/tests/**", "src/**/migrations/*"]
+skips = ["B106"]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.0"
+tag_format = "$version"
+bump_message = "bump: version $current_version → $new_version"
+update_changelog_on_bump = true
+changelog_file = "CHANGELOG.md"
+changelog_incremental = true
+version_files = [
+    "pyproject.toml:^version",
+    "Dockerfile:VERSION",
+]
