@@ -25,3 +25,7 @@ bootstrap-dev: .venv/ ## Bootstrap the development environment
 .PHONY: build
 build:
 	docker build -t rest-headless-browser .
+
+.PHONY: run
+run:
+	docker run -p 8000:8000 --rm -it rest-headless-browser

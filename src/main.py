@@ -4,11 +4,11 @@ from contextlib import asynccontextmanager
 from cachetools import TTLCache
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from models import PageDump
+from fastapi.responses import Response
 from pydantic import HttpUrl
 
 from browser_pool import BrowserPool
-from page_dumper import focused_page_dump
+from page_dumper import PageDump, focused_page_dump
 from screenshot import ScreenshotParams, capture_screenshot
 
 logging.basicConfig(level=logging.INFO)
@@ -44,8 +44,8 @@ app.add_middleware(
 )
 
 
-@app.post("/screenshot")
-async def post_screenshot(params: ScreenshotParams) -> dict:
+@app.post("/screenshot", response_class=Response)
+async def post_screenshot(params: ScreenshotParams) -> Response:
     """Capture a screenshot of a webpage."""
     return await capture_screenshot(params, browser_pool)
 

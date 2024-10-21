@@ -42,7 +42,7 @@ async def focused_page_dump(url: str, cache: TTLCache, browser_pool: BrowserPool
     browser = await browser_pool.get_browser()
     try:
         page = await browser.new_page()
-        await page.goto(url, wait_until="networkidle")
+        await page.goto(url, wait_until="load")
         dump = await page.evaluate(PAGE_DUMP_SCRIPT)
     except Exception as e:
         msg = f"Error scraping {url}: {e!s}"
