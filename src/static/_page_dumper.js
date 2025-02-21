@@ -26,6 +26,11 @@
             alt: img.alt,
             width: img.width,
             height: img.height
-        }))
+        })),
+        links: Array.from(document.links).map(link => ({
+            href: link.href,
+            text: link.innerText,
+            title: link.title
+        })),
     };
 }
