@@ -44,7 +44,7 @@ async def capture_screenshot(params: ScreenshotParams, browser_pool: BrowserPool
         context = await browser.new_context(viewport={"width": params.width, "height": params.height or 600})
         page = await context.new_page()
 
-        await page.goto(str(params.url), wait_until=["load", "domcontentloaded"])
+        await page.goto(str(params.url), wait_until="load")
 
         screenshot_params = {"full_page": params.full_page, "type": params.format}
         screenshot = await page.screenshot(**screenshot_params)
