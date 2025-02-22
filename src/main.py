@@ -8,7 +8,7 @@ from fastapi.responses import Response
 from pydantic import HttpUrl
 
 from browser_pool import BrowserPool
-from page_dumper import PageDump, focused_page_dump
+from page_dumper import focused_page_dump
 from screenshot import ScreenshotParams, capture_screenshot
 
 logging.basicConfig(level=logging.INFO)
@@ -50,20 +50,21 @@ async def post_screenshot(params: ScreenshotParams) -> Response:
     return await capture_screenshot(params, browser_pool)
 
 
-@app.post("/receive-dump")
-async def receive_page_dump(dump: PageDump) -> dict:
-    """Receive a page dump."""
-    # Here you would process and store the received dump. For now, we'll just log it
-    msg = f"Received dump for page with {len(dump.scripts)} scripts and {len(dump.images)} images"
-    logger.info(msg)
-    return {"status": "received"}
-
-
-@app.get("/page-dump")
+@app.get(
+    "/page-dump",
+    summary="Given a url, dump the contents of a webpage (HTML, scripts, stylesheets, JS variable names).",
+    description="Use a playwright browser to scrape a webpage and dump its contents. Return a JSON object with the page contents.",
+    response_description="JSON object with the page contents",
+    responses={
+        200: {"description": "Page dump"},
+        500: {"description": "Internal server error"},
+    },
+    tags=["scraping"],
+)
 async def get_page_dump(url: HttpUrl, background_tasks: BackgroundTasks) -> dict:
-    """Dump the contents of a webpage (HTML, scripts, stylesheets, JS variable names)."""
+    """Given a url, dump the contents of a webpage (HTML, scripts, stylesheets, JS variable names)."""
     try:
-        background_tasks.add_task(log_scrape_stats, url)
+        background_tasks.add_task(log_scrape_stats, str(url))
         return await focused_page_dump(str(url), cache, browser_pool, logger)
     except Exception as e:
         msg = f"Error processing request for {url}: {e!s}"
