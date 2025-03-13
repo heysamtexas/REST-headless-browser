@@ -1,5 +1,69 @@
 () => {
     return {
+        // Metadata about the dump itself
+        url: window.location.href,
+        timestamp: new Date().toISOString(),
+
+        // Basic page metadata
+        title: document.title,
+        metaDescription: document.querySelector('meta[name="description"]')?.content,
+        canonicalUrl: document.querySelector('link[rel="canonical"]')?.href,
+        language: document.documentElement.lang || null,
+
+        // Cookie information
+        cookies: document.cookie.split(';').map(cookie => {
+            const [name, ...rest] = cookie.split('=');
+            return {
+                name: name?.trim(),
+                value: rest.join('=')?.trim(),
+            };
+        }),
+
+        // Additional metadata that could be useful
+        viewport: document.querySelector('meta[name="viewport"]')?.content,
+        robots: document.querySelector('meta[name="robots"]')?.content,
+
+        // Icons and logos
+        favicons: Array.from(document.querySelectorAll('link[rel*="icon"]')).map(link => ({
+            href: link.href,
+            rel: link.rel,
+            type: link.type,
+            sizes: link.sizes?.value
+        })),
+
+        // JSON-LD
+        jsonLd: Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
+            .map(script => {
+                try {
+                    return JSON.parse(script.innerHTML);
+                } catch (e) {
+                    return { error: 'Invalid JSON-LD' };
+                }
+            }),
+
+        // OpenGraph metadata
+        openGraph: Array.from(document.querySelectorAll('meta[property^="og:"]'))
+            .map(meta => ({
+                property: meta.getAttribute('property'),
+                content: meta.content
+            })),
+
+        // Twitter Card metadata
+        twitterCard: Array.from(document.querySelectorAll('meta[name^="twitter:"]'))
+            .map(meta => ({
+                name: meta.getAttribute('name'),
+                content: meta.content
+            })),
+
+        // RSS/Atom feeds
+        feeds: Array.from(document.querySelectorAll('link[type*="rss"], link[type*="atom"]'))
+            .map(link => ({
+                href: link.href,
+                title: link.title,
+                type: link.type
+            })),
+
+        // ...existing code...
         html: document.documentElement.outerHTML,
         scripts: Array.from(document.scripts).map(script => ({
             src: script.src,
@@ -31,6 +95,6 @@
             href: link.href,
             text: link.innerText,
             title: link.title
-        })),
+        }))
     };
 }
