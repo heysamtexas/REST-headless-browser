@@ -93,8 +93,8 @@
         })),
         links: Array.from(document.links).map(link => ({
             href: link.href,
-            text: link.innerText,
-            title: link.title
+            text: link.innerText.replace(/\s+/g, ' ').trim(),
+            title: link.title.replace(/\s+/g, ' ').trim()
         }))
     };
 }
