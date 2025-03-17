@@ -5,10 +5,10 @@
         timestamp: new Date().toISOString(),
 
         // Basic page metadata
-        title: document.title,
-        metaDescription: document.querySelector('meta[name="description"]')?.content,
-        canonicalUrl: document.querySelector('link[rel="canonical"]')?.href,
-        language: document.documentElement.lang || null,
+        title: document.title || '',
+        metaDescription: document.querySelector('meta[name="description"]')?.content || '',
+        canonicalUrl: document.querySelector('link[rel="canonical"]')?.href || '',
+        language: document.documentElement.lang || '',
 
         // Cookie information
         cookies: document.cookie.split(';').map(cookie => {
