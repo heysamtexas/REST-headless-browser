@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from link_categorizer import categorize_link
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
@@ -50,6 +51,9 @@ async def focused_page_dump(url: str, cache: TTLCache, browser_pool: BrowserPool
         raise
     finally:
         await browser_pool.release_browser(browser)
+
+    for link in dump["links"]:
+        link["category"] = categorize_link(link)
 
     cache[url] = dump
     return dump
