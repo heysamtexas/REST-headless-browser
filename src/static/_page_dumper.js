@@ -56,7 +56,7 @@
             })),
 
         // RSS/Atom feeds
-        feeds: Array.from(document.querySelectorAll('link[type*="rss"], link[type*="atom"]'))
+        feeds: Array.from(document.querySelectorAll('link[type*="rss"], link[type*="atom"], link[type*="application/rss+xml"], link[type*="application/atom+xml"]'))
             .map(link => ({
                 href: link.href,
                 title: link.title,
