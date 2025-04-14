@@ -1,6 +1,6 @@
 fastapi==0.115.12
 playwright==1.51.0
 cachetools==5.5.2
-pydantic==2.10.6
+pydantic==2.11.3
 uvicorn==0.34.0
 link_categorizer==0.1.4
