@@ -8,7 +8,7 @@ authors = [{name = "Sam Texas", email = "github+rest_headless_browser@simplecto.
 readme = "README.md"
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
-dscription = ""
+description = ""
 versions = "0.1.0"
 
 [project.urls]
