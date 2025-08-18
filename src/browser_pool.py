@@ -12,7 +12,18 @@ from playwright.async_api import async_playwright
 if TYPE_CHECKING:
     from playwright.async_api import Browser
 
-MAX_BROWSERS = 2
+
+# Environment variable configuration with validation
+def _get_max_browsers() -> int:
+    """Get max browsers from environment variable with validation."""
+    try:
+        value = int(os.getenv("BROWSER_MAX_BROWSERS", "2"))
+        return max(1, value)  # Ensure minimum of 1
+    except (ValueError, TypeError):
+        return 2  # Default fallback for invalid values
+
+
+MAX_BROWSERS = _get_max_browsers()
 IDLE_TIMEOUT = int(os.getenv("BROWSER_IDLE_TIMEOUT", "300"))  # 5 minutes default
 
 
