@@ -8,7 +8,7 @@ from playwright.async_api import async_playwright
 if TYPE_CHECKING:
     from playwright.async_api import Browser
 
-MAX_BROWSERS = 5
+MAX_BROWSERS = 2
 
 
 class BrowserPool:
@@ -20,18 +20,39 @@ class BrowserPool:
         self.semaphore = asyncio.Semaphore(max_browsers)
         self.playwright = None
         self.browsers: list[Browser] = []
+        self._current_browser_index = 0
 
     async def initialize(self) -> None:
         """Initialize the BrowserPool by starting the Playwright instance and launching the browsers."""
         self.playwright = await async_playwright().start()
+
+        # Browser launch arguments for reduced resource usage
+        launch_args = [
+            "--disable-gpu",
+            "--disable-software-rasterizer",
+            "--disable-background-timer-throttling",
+            "--disable-backgrounding-occluded-windows",
+            "--disable-renderer-backgrounding",
+            "--disable-features=TranslateUI",
+            "--disable-extensions",
+            "--disable-component-extensions-with-background-pages",
+            "--disable-default-apps",
+            "--disable-audio-output",
+            "--no-sandbox",
+            "--disable-web-security",
+            "--disable-dev-shm-usage",
+        ]
+
         for _ in range(self.max_browsers):
-            browser: Browser = await self.playwright.chromium.launch()
+            browser: Browser = await self.playwright.chromium.launch(headless=True, args=launch_args)
             self.browsers.append(browser)
 
     async def get_browser(self) -> Browser:
-        """Get a browser from the pool."""
+        """Get a browser from the pool using round-robin allocation."""
         await self.semaphore.acquire()
-        return self.browsers[0]  # Simplified for example; could implement round-robin
+        browser = self.browsers[self._current_browser_index]
+        self._current_browser_index = (self._current_browser_index + 1) % len(self.browsers)
+        return browser
 
     async def release_browser(self, browser: Browser) -> None:  # noqa: ARG002
         """Release the browser back to the pool."""
