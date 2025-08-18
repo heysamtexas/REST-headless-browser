@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI) -> None:  # noqa: ARG001
     """Context manager to handle startup and shutdown of the browser pool."""
     # Startup
     await browser_pool.initialize()
-    logger.info("Browser pool initialized")
+    logger.info("Browser pool initialized with idle timeout cleanup")
 
     yield  # This is where the app runs
 
