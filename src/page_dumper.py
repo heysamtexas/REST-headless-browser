@@ -41,8 +41,10 @@ async def focused_page_dump(url: str, cache: TTLCache, browser_pool: BrowserPool
         return cache[url]
 
     browser = await browser_pool.get_browser()
+    context = None
     try:
-        page = await browser.new_page()
+        context = await browser.new_context()
+        page = await context.new_page()
         await page.goto(url, wait_until="load")
         dump = await page.evaluate(PAGE_DUMP_SCRIPT)
     except Exception as e:
@@ -50,6 +52,8 @@ async def focused_page_dump(url: str, cache: TTLCache, browser_pool: BrowserPool
         logger.exception(msg)
         raise
     finally:
+        if context:
+            await context.close()
         await browser_pool.release_browser(browser)
 
     for link in dump["links"]:

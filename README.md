@@ -31,6 +31,9 @@ docker build -t rest-headless-browser .
 
 # Run the container
 docker run -p 8000:8000 rest-headless-browser
+
+# Run with custom configuration
+docker run -e BROWSER_MAX_BROWSERS=3 -e BROWSER_IDLE_TIMEOUT=180 -p 8000:8000 rest-headless-browser
 ```
 
 Or use docker-compose if you're feeling fancy:
@@ -71,9 +74,27 @@ Use this to find the data you actually care about before writing a more targeted
 
 ## Configuration
 
-There isn't much. The service creates a pool of 5 browsers by default. If your server has the RAM of a scientific calculator, you might want to adjust `MAX_BROWSERS` in `src/browser_pool.py`.
+The service uses dynamic browser management - it starts with 0 browsers and creates them on-demand up to a configurable maximum. Idle browsers are automatically shut down after 5 minutes to save memory.
+
+### Environment Variables
+
+- `BROWSER_MAX_BROWSERS`: Maximum concurrent browsers (default: 2, minimum: 1)
+- `BROWSER_IDLE_TIMEOUT`: Browser idle timeout in seconds (default: 300)
+
+### Cache Settings
 
 The page cache keeps results for an hour. Adjust the TTL in `src/main.py` if you need to.
+
+### Resource Usage
+
+The service is optimized for efficient memory usage:
+
+- **Idle state**: ~160MB (0 browsers running)
+- **Active usage**: ~250MB per browser instance
+- **Scaling**: Creates browsers on-demand when requests arrive
+- **Cleanup**: Automatically shuts down idle browsers after timeout period
+
+This means your service will use minimal resources when idle and scale up only when needed.
 
 ## Why This Exists
 

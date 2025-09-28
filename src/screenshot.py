@@ -40,6 +40,7 @@ class ScreenshotParams(BaseModel):
 async def capture_screenshot(params: ScreenshotParams, browser_pool: BrowserPool) -> Response:
     """Capture a screenshot of a webpage."""
     browser = await browser_pool.get_browser()
+    context = None
     try:
         context = await browser.new_context(viewport={"width": params.width, "height": params.height or 600})
         page = await context.new_page()
@@ -49,13 +50,13 @@ async def capture_screenshot(params: ScreenshotParams, browser_pool: BrowserPool
         screenshot_params = {"full_page": params.full_page, "type": params.format}
         screenshot = await page.screenshot(**screenshot_params)
 
-        await context.close()
-
     except Exception as e:
         msg = f"Error capturing screenshot for {params.url}: {e!s}"
         logger.exception(msg)
         raise HTTPException(status_code=500, detail=str(e)) from e
     finally:
+        if context:
+            await context.close()
         await browser_pool.release_browser(browser)
 
     return Response(content=screenshot, media_type=f"image/{params.format}")
