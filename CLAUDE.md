@@ -96,6 +96,22 @@ There's an experimental browser extension in `src/browser_extension/` with:
 
 The main README suggests this may be removed in the future.
 
+## Git Workflow
+
+### Handling Pre-commit Hooks
+
+This repository uses pre-commit hooks (ruff, end-of-file-fixer, etc.) that automatically modify files during commits. When this happens:
+
+1. **Pre-commit hook modifies files after initial commit attempt** - This is EXPECTED behavior
+2. **Amend the commit to include hook changes** - Use `git commit --amend` to include the modifications
+3. **After amending, check if the original commit was already pushed:**
+   - If NOT pushed yet: Simply `git push` the amended commit
+   - If already pushed: Consider the implications of rewriting history
+4. **NEVER use `git reset --hard` when recent work exists** - Even if git shows "working tree clean", a hard reset will destroy the amended commit
+5. **Branch divergence after amending is normal** - If you amend a local-only commit, pushing it normally is the correct action
+
+**Key principle:** When pre-commit hooks modify files, amending is correct. Don't panic about divergence or try to "undo" the amendment. Just push the amended commit.
+
 ## Important Notes
 
 - The service allows all CORS origins by default
